@@ -2,15 +2,16 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "去野｜下一站，和喜欢的人一起出发",
-  description: "为年轻自由行游客与情侣精选目的地，并生成专属双人旅行路线。",
+  metadataBase: new URL("https://quye-travel-journal.songtienan21.chatgpt.site"),
+  title: "去野｜发现下一段值得记录的旅程",
+  description: "发现目的地、生成个性行程，收藏每一次旅行心动。",
   icons: { icon: "/favicon.svg", shortcut: "/favicon.svg" },
   openGraph: {
-    title: "去野｜下一站，和喜欢的人一起出发",
-    description: "发现适合两个人的旅行灵感，30 秒生成专属路线。",
-    images: [{ url: "/og.png", width: 1731, height: 909, alt: "去野旅行推荐" }],
+    title: "去野｜发现下一段值得记录的旅程",
+    description: "发现目的地、生成个性行程，也把每一次心动稳稳收藏。",
+    images: [{ url: "/og-v2.png", width: 1736, height: 904, alt: "去野｜发现下一段值得记录的旅程" }],
   },
-  twitter: { card: "summary_large_image", images: ["/og.png"] },
+  twitter: { card: "summary_large_image", images: ["/og-v2.png"] },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
