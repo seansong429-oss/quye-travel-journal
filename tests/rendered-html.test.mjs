@@ -60,9 +60,11 @@ test("wires real travel data and account persistence contracts", async () => {
   assert.match(itinerary, /api\.deepseek\.com\/chat\/completions/);
   assert.match(itinerary, /json_object/);
   assert.match(itinerary, /DEEPSEEK_API_KEY/);
+  assert.match(itinerary, /世界各地的城市、国家、海岛、自然保护区、偏远地区、跨城路线/);
   assert.match(weather, /geocoding-api\.open-meteo\.com/);
   assert.match(weather, /大理市/);
   assert.match(traffic, /restapi\.amap\.com\/v5\/direction/);
+  assert.match(traffic, /ROUTE_UNAVAILABLE/);
   assert.match(favorites, /getChatGPTUser/);
   assert.match(trips, /getChatGPTUser/);
   assert.match(schema, /sqliteTable\(\s*"favorites"/);

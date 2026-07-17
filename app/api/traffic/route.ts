@@ -88,6 +88,13 @@ export async function POST(request: Request) {
     };
     return Response.json({ traffic: summary }, { headers: { "Cache-Control": "private, max-age=120" } });
   } catch (error) {
-    return Response.json({ error: errorMessage(error, "交通数据暂时不可用") }, { status: 502 });
+    const message = errorMessage(error, "交通数据暂时不可用");
+    const routeUnavailable = /无法定位|未找到地点|没有找到合适|未返回可用路线/.test(message);
+    return Response.json(
+      routeUnavailable
+        ? { error: "该地点暂未取得高德实时路线；海外或偏远地区请以当地地图与交通运营方为准。", code: "ROUTE_UNAVAILABLE" }
+        : { error: message, code: "TRAFFIC_ERROR" },
+      { status: routeUnavailable ? 422 : 502 },
+    );
   }
 }
