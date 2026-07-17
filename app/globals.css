@@ -70,6 +70,7 @@ button, a, input, select { transition: color var(--ease), background var(--ease)
 .searchBox > span { color: var(--brand); font-size: 25px; transform: rotate(-18deg); }
 .searchBox input { min-width: 0; flex: 1; height: 100%; border: 0; outline: 0; padding: 0 14px; background: transparent; color: var(--ink); font-size: 14px; }
 .searchBox input::placeholder { color: #8c938f; }
+.searchHint { display: block; width: min(620px, 100%); margin-top: 10px; padding-left: 18px; color: rgba(255,255,255,.82); font-size: 12px; line-height: 1.5; }
 .searchBox button { min-height: 46px; border: 0; padding: 0 22px; border-radius: 999px; background: var(--brand); color: #fff; font-size: 13px; font-weight: 800; }
 .searchBox button:hover { background: var(--brand-dark); }
 .heroActions { display: flex; gap: 12px; margin-top: 18px; }

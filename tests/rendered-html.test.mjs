@@ -19,7 +19,8 @@ test("server-renders the finished travel product", async () => {
   assert.match(html, /灵感目的地/);
   assert.match(html, /智能行程/);
   assert.match(html, /我的收藏/);
-  assert.match(html, /搜索想去的地方/);
+  assert.match(html, /输入全球任意目的地/);
+  assert.match(html, /规划这个目的地/);
   assert.match(html, /热门目的地/);
   assert.match(html, /loading="lazy"/);
   assert.doesNotMatch(html, /codex-preview|Your site is taking shape/);
@@ -36,6 +37,7 @@ test("keeps responsive and accessible product contracts", async () => {
   assert.match(page, /aria-describedby/);
   assert.match(page, /localStorage/);
   assert.match(page, /loading="lazy"/);
+  assert.match(page, /onPlan\(destination\)/);
   assert.match(css, /max-width:\s*720px/);
   assert.match(css, /grid-template-columns:\s*repeat\(2/);
   assert.match(css, /grid-template-columns:\s*1fr/);

@@ -90,14 +90,15 @@ function DiscoverView({ saved, onToggleSaved, onPlan, onFavorites }: { saved: st
   const [selected, setSelected] = useState<Destination | null>(null);
   const resultsRef = useRef<HTMLElement>(null);
   const filters = ["全部", "自然", "美食", "亲子", "小众"];
-  const visible = useMemo(() => destinations.filter((item) => (filter === "全部" || item.tags.includes(filter)) && (`${item.city}${item.country}${item.title}${item.tags.join("")}`).toLowerCase().includes(query.trim().toLowerCase())), [filter, query]);
-  const handleSearch = (event: FormEvent) => { event.preventDefault(); resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }); };
+  const visible = useMemo(() => destinations.filter((item) => filter === "全部" || item.tags.includes(filter)), [filter]);
+  const handleSearch = (event: FormEvent) => { event.preventDefault(); const destination = query.trim(); if (destination) onPlan(destination); };
 
   return <>
     <section className="hero" aria-labelledby="hero-title">
       <img className="heroImage" src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1800&q=82" alt="山野湖畔的旅行风景" fetchPriority="high" decoding="async" /><div className="heroShade" />
       <div className="heroInner"><div className="heroCopy"><p className="heroKicker"><span />把世界，走成自己的故事</p><h1 id="hero-title">发现下一段<br />值得记录的旅程</h1><p>发现目的地、生成个性行程，也把每一次心动稳稳收藏。去哪里不必马上决定，先从一张风景开始。</p>
-        <form className="searchBox" role="search" onSubmit={handleSearch}><label htmlFor="destination-search">搜索想去的地方</label><span aria-hidden="true">⌕</span><input id="destination-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索城市、国家或旅行主题" /><button type="submit">寻找灵感</button></form>
+        <form className="searchBox" role="search" onSubmit={handleSearch}><label htmlFor="destination-search">输入全球任意目的地</label><span aria-hidden="true">⌕</span><input id="destination-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="例如：东京、巴黎、开普敦或 Patagonia" required autoComplete="off" aria-describedby="destination-search-hint" /><button type="submit">规划这个目的地</button></form>
+        <small className="searchHint" id="destination-search-hint">无需从推荐城市中选择，中文、英文、国家、海岛或地区名称都可以。</small>
         <div className="heroActions"><button className="button primaryButton" onClick={() => onPlan(query || undefined)}>开始规划行程 <span>→</span></button><button className="button ghostButton" onClick={() => resultsRef.current?.scrollIntoView({ behavior: "smooth" })}>探索目的地</button></div>
       </div><aside className="heroNote" aria-label="本周旅行灵感"><span>本周灵感 · NO. 01</span><strong>去有风的地方</strong><p>大理洱海，4—5 天慢旅行</p></aside></div>
     </section>
