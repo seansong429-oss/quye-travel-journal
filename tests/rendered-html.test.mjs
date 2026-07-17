@@ -45,3 +45,29 @@ test("keeps responsive and accessible product contracts", async () => {
   assert.match(layout, /og-v2\.png/);
   assert.match(packageJson, /"build": "vinext build"/);
 });
+
+test("wires real travel data and account persistence contracts", async () => {
+  const [itinerary, weather, traffic, favorites, trips, schema, hosting, migration] = await Promise.all([
+    readFile(new URL("../app/api/itinerary/route.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/api/weather/route.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/api/traffic/route.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/api/favorites/route.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/api/trips/route.ts", import.meta.url), "utf8"),
+    readFile(new URL("../db/schema.ts", import.meta.url), "utf8"),
+    readFile(new URL("../.openai/hosting.json", import.meta.url), "utf8"),
+    readFile(new URL("../drizzle/0000_typical_meteorite.sql", import.meta.url), "utf8"),
+  ]);
+  assert.match(itinerary, /api\.deepseek\.com\/chat\/completions/);
+  assert.match(itinerary, /json_object/);
+  assert.match(itinerary, /DEEPSEEK_API_KEY/);
+  assert.match(weather, /geocoding-api\.open-meteo\.com/);
+  assert.match(weather, /大理市/);
+  assert.match(traffic, /restapi\.amap\.com\/v5\/direction/);
+  assert.match(favorites, /getChatGPTUser/);
+  assert.match(trips, /getChatGPTUser/);
+  assert.match(schema, /sqliteTable\(\s*"favorites"/);
+  assert.match(schema, /sqliteTable\("saved_trips"/);
+  assert.match(hosting, /"d1": "DB"/);
+  assert.match(migration, /CREATE TABLE `favorites`/);
+  assert.match(migration, /CREATE TABLE `saved_trips`/);
+});
