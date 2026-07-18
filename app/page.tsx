@@ -137,6 +137,7 @@ function PlannerView({ initialDestination, onSaved }: { initialDestination: stri
   const [step, setStep] = useState(1), [loading, setLoading] = useState(false), [message, setMessage] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({}), [requestError, setRequestError] = useState("");
   const [itinerary, setItinerary] = useState<GeneratedItinerary | null>(null), [weather, setWeather] = useState<WeatherSummary | null>(null);
+  const [destinationDetail, setDestinationDetail] = useState<DestinationDetail | null>(null);
   const [traffic, setTraffic] = useState<Record<string, TrafficSummary | "loading" | "error">>({});
   const [data, setData] = useState<PlannerData>({ destination: initialDestination, date: "", days: "5", people: "2", budget: "舒适型", interests: ["自然风景", "在地美食"], transport: "公共交通" });
   const interests = ["自然风景", "在地美食", "人文历史", "城市漫步", "亲子体验", "小众秘境"];
@@ -144,16 +145,18 @@ function PlannerView({ initialDestination, onSaved }: { initialDestination: stri
   const validate = () => { const next: Record<string, string> = {}; if (step === 1 && !data.destination.trim()) next.destination = "请输入想去的目的地"; if (step === 1 && !data.date) next.date = "请选择出发日期"; if (step === 4 && !data.interests.length) next.interests = "请至少选择一项兴趣"; setErrors(next); return !Object.keys(next).length; };
   const generate = async () => {
     if (!validate()) return;
-    setLoading(true); setMessage(""); setRequestError(""); setTraffic({});
+    setLoading(true); setMessage(""); setRequestError(""); setTraffic({}); setDestinationDetail(null);
     try {
-      const [tripResponse, weatherResponse] = await Promise.all([
+      const [tripResponse, weatherResponse, detailResponse] = await Promise.all([
         fetch("/api/itinerary", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) }),
-        fetch(`/api/weather?destination=${encodeURIComponent(data.destination)}&date=${encodeURIComponent(data.date)}&days=${data.days}`),
+        fetch(`/api/weather?destination=${encodeURIComponent(data.destination)}&date=${encodeURIComponent(data.date)}&days=${data.days}`).catch(() => null),
+        fetch(`/api/destination-detail?destination=${encodeURIComponent(data.destination)}`).catch(() => null),
       ]);
       const tripBody = await tripResponse.json() as { itinerary?: GeneratedItinerary; error?: string };
       if (!tripResponse.ok || !tripBody.itinerary) throw new Error(tripBody.error || "AI 行程生成失败");
       setItinerary(tripBody.itinerary);
-      if (weatherResponse.ok) { const weatherBody = await weatherResponse.json() as { weather?: WeatherSummary }; setWeather(weatherBody.weather || null); }
+      if (weatherResponse?.ok) { const weatherBody = await weatherResponse.json() as { weather?: WeatherSummary }; setWeather(weatherBody.weather || null); }
+      if (detailResponse?.ok) { const detailBody = await detailResponse.json() as { detail?: DestinationDetail }; setDestinationDetail(detailBody.detail || null); }
     } catch (error) { setRequestError(error instanceof Error ? error.message : "生成失败，请稍后再试"); }
     finally { setLoading(false); }
   };
@@ -164,6 +167,7 @@ function PlannerView({ initialDestination, onSaved }: { initialDestination: stri
   if (loading) return <main className="subPage plannerPage"><div className="subPageIntro"><p className="eyebrow">LIVE AI PLANNER</p><h1>AI 正在编排你的真实行程</h1><span>同时读取目的地天气；通常需要十几秒，请不要关闭页面。</span></div><div className="skeletonPanel" aria-live="polite" aria-label="正在生成行程"><i /><i /><i /><i /></div></main>;
   if (itinerary) return <main className="subPage resultPage">
     <div className="resultHeader"><div><p className="eyebrow">AI TRIP · LIVE DATA</p><h1>{itinerary.title}</h1><span>{data.date} · {data.people} 人 · {data.budget} · {data.transport}</span><p className="resultSummary">{itinerary.summary}</p></div><div className="resultActions"><button className="button ghostDarkButton" onClick={() => { setItinerary(null); setStep(1); }}>重新生成</button><button className="button ghostDarkButton" onClick={exportTrip}>导出</button><button className="button primaryButton" onClick={saveTrip}>♥ 保存行程</button></div></div>
+    {destinationDetail?.image && <figure className="resultDestinationPhoto"><img src={destinationDetail.image} alt={`${data.destination}旅行风景`} fetchPriority="high" decoding="async" /><figcaption><span><b>{destinationDetail.title}</b> · 此行程的目的地影像</span><a href={destinationDetail.sourceUrl} target="_blank" rel="noreferrer">图片与资料来源 · 维基百科 ↗</a></figcaption></figure>}
     {message && <div className="toast" role="status">{message}</div>}{weather?.notice && <div className="dataNotice">天气提示：{weather.notice}</div>}
     <div className="dayTimeline">{itinerary.days.map((day, dayIndex) => <section className="dayCard" key={day.day}><div className="dayLabel"><span>第 {day.day} 天</span><h2>{day.title}</h2>{weather?.days?.[dayIndex] && <div className="weatherBadge"><b>{weather.days[dayIndex].label}</b><small>{weather.days[dayIndex].temperatureMin}—{weather.days[dayIndex].temperatureMax}°C · 降水 {weather.days[dayIndex].precipitationProbability}%</small></div>}</div><div className="dayItems">{day.items.map((item, itemIndex) => { const trafficKey = `${day.day}-${itemIndex}`; const trafficResult = traffic[trafficKey]; const previous = day.items[itemIndex - 1]; return <div className="dayItem" key={`${item.time}-${item.place}`}><time>{item.time}</time><div><strong>{item.place} · {item.activity}</strong><span>交通：{item.transport}</span><span>餐饮：{item.meal}</span><small>{item.note}</small>{previous && <div className="trafficLookup"><button onClick={() => checkTraffic(trafficKey, previous.place, item.place)} disabled={trafficResult === "loading"}>{trafficResult === "loading" ? "正在查询…" : "查询实时交通"}</button>{trafficResult === "error" && <em>该地点暂未取得实时路线，请以当地地图为准</em>}{typeof trafficResult === "object" && <em className="trafficSuccess">高德实时：{trafficResult.durationMinutes ? `${trafficResult.durationMinutes} 分钟` : "已规划"}{trafficResult.distanceKilometers ? ` · ${trafficResult.distanceKilometers} 公里` : ""} · {trafficResult.trafficStatus}</em>}</div>}</div></div>; })}</div></section>)}</div>
     <div className="resultNote"><strong>行前提醒 · AI 生成</strong>{itinerary.reminders.map((item) => <p key={item}>· {item}</p>)}<p>天气来自 Open-Meteo，交通查询来自高德 Web 服务；营业与预约信息请以出发当日官方公告为准。</p></div>

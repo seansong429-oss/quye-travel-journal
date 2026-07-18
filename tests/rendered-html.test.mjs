@@ -49,10 +49,11 @@ test("keeps responsive and accessible product contracts", async () => {
 });
 
 test("wires real travel data and account persistence contracts", async () => {
-  const [itinerary, weather, traffic, favorites, trips, schema, hosting, migration] = await Promise.all([
+  const [itinerary, weather, traffic, destination, favorites, trips, schema, hosting, migration] = await Promise.all([
     readFile(new URL("../app/api/itinerary/route.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/api/weather/route.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/api/traffic/route.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/api/destination-detail/route.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/api/favorites/route.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/api/trips/route.ts", import.meta.url), "utf8"),
     readFile(new URL("../db/schema.ts", import.meta.url), "utf8"),
@@ -67,6 +68,9 @@ test("wires real travel data and account persistence contracts", async () => {
   assert.match(weather, /大理市/);
   assert.match(traffic, /restapi\.amap\.com\/v5\/direction/);
   assert.match(traffic, /ROUTE_UNAVAILABLE/);
+  assert.match(destination, /params\.get\("destination"\)/);
+  assert.match(destination, /srsearch/);
+  assert.match(destination, /pithumbsize", "1600"/);
   assert.match(favorites, /getChatGPTUser/);
   assert.match(trips, /getChatGPTUser/);
   assert.match(schema, /sqliteTable\(\s*"favorites"/);

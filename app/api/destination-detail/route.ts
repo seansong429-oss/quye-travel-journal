@@ -7,26 +7,53 @@ const titles: Record<string, string> = {
 type WikiResponse = {
   query?: { pages?: Record<string, { title?: string; extract?: string; fullurl?: string; touched?: string; thumbnail?: { source?: string } }> };
 };
+type WikiSearchResponse = { query?: { search?: Array<{ title?: string }> } };
+
+const wikiHeaders = { "User-Agent": "QuyeTravelJournal/1.0" };
+
+async function fetchWikiPage(title: string) {
+  const wikiUrl = new URL("https://zh.wikipedia.org/w/api.php");
+  wikiUrl.searchParams.set("action", "query");
+  wikiUrl.searchParams.set("prop", "extracts|pageimages|info");
+  wikiUrl.searchParams.set("exintro", "1");
+  wikiUrl.searchParams.set("explaintext", "1");
+  wikiUrl.searchParams.set("inprop", "url");
+  wikiUrl.searchParams.set("piprop", "thumbnail");
+  wikiUrl.searchParams.set("pithumbsize", "1600");
+  wikiUrl.searchParams.set("redirects", "1");
+  wikiUrl.searchParams.set("format", "json");
+  wikiUrl.searchParams.set("origin", "*");
+  wikiUrl.searchParams.set("titles", title);
+  const response = await fetchJson<WikiResponse>(wikiUrl.toString(), { headers: wikiHeaders });
+  return Object.values(response.query?.pages ?? {})[0];
+}
+
+async function searchWikiTitle(destination: string) {
+  const searchUrl = new URL("https://zh.wikipedia.org/w/api.php");
+  searchUrl.searchParams.set("action", "query");
+  searchUrl.searchParams.set("list", "search");
+  searchUrl.searchParams.set("srsearch", `${destination} 旅游`);
+  searchUrl.searchParams.set("srnamespace", "0");
+  searchUrl.searchParams.set("srlimit", "1");
+  searchUrl.searchParams.set("format", "json");
+  searchUrl.searchParams.set("origin", "*");
+  const response = await fetchJson<WikiSearchResponse>(searchUrl.toString(), { headers: wikiHeaders });
+  return response.query?.search?.[0]?.title;
+}
 
 export async function GET(request: Request) {
   try {
-    const id = new URL(request.url).searchParams.get("id") || "";
-    const title = titles[id];
-    if (!title) return Response.json({ error: "未知目的地" }, { status: 404 });
-    const wikiUrl = new URL("https://zh.wikipedia.org/w/api.php");
-    wikiUrl.searchParams.set("action", "query");
-    wikiUrl.searchParams.set("prop", "extracts|pageimages|info");
-    wikiUrl.searchParams.set("exintro", "1");
-    wikiUrl.searchParams.set("explaintext", "1");
-    wikiUrl.searchParams.set("inprop", "url");
-    wikiUrl.searchParams.set("piprop", "thumbnail");
-    wikiUrl.searchParams.set("pithumbsize", "1200");
-    wikiUrl.searchParams.set("redirects", "1");
-    wikiUrl.searchParams.set("format", "json");
-    wikiUrl.searchParams.set("origin", "*");
-    wikiUrl.searchParams.set("titles", title);
-    const response = await fetchJson<WikiResponse>(wikiUrl.toString(), { headers: { "User-Agent": "QuyeTravelJournal/1.0" } });
-    const page = Object.values(response.query?.pages ?? {})[0];
+    const params = new URL(request.url).searchParams;
+    const id = params.get("id") || "";
+    const destination = params.get("destination")?.trim() || "";
+    const title = titles[id] || destination;
+    if (!title) return Response.json({ error: "请输入目的地" }, { status: 400 });
+
+    let page = await fetchWikiPage(title);
+    if (!page?.extract || !page.thumbnail?.source) {
+      const matchedTitle = await searchWikiTitle(title);
+      if (matchedTitle) page = await fetchWikiPage(matchedTitle);
+    }
     if (!page?.extract || !page.fullurl) throw new Error("百科没有返回可用的目的地资料");
     const detail: DestinationDetail = {
       title: page.title || title,
