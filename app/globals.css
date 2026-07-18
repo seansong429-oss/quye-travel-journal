@@ -34,7 +34,7 @@ button, a, input, select { transition: color var(--ease), background var(--ease)
 .siteShell { min-height: 100vh; }
 
 .siteHeader { position: sticky; top: 0; z-index: 40; height: 74px; border-bottom: 1px solid rgba(42, 48, 45, .1); background: rgba(255, 253, 248, .92); backdrop-filter: blur(18px); }
-.navContainer { width: min(var(--container), calc(100% - 48px)); height: 100%; margin: 0 auto; display: grid; grid-template-columns: 220px 1fr 220px; align-items: center; }
+.navContainer { width: min(var(--container), calc(100% - 48px)); height: 100%; margin: 0 auto; display: grid; grid-template-columns: 190px 1fr 300px; align-items: center; }
 .brand { border: 0; background: transparent; padding: 0; display: flex; align-items: center; width: max-content; }
 .brandMark { font-size: 29px; font-weight: 900; letter-spacing: -3px; line-height: 1; }
 .brandDot { width: 8px; height: 8px; margin: -12px 0 0 7px; border-radius: 50%; background: var(--brand); }
@@ -44,10 +44,15 @@ button, a, input, select { transition: color var(--ease), background var(--ease)
 .desktopNav button:hover { color: var(--brand); }
 .desktopNav button.isActive { color: var(--ink); font-weight: 700; }
 .desktopNav button.isActive::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 3px; border-radius: 3px 3px 0 0; background: var(--brand); }
-.savedButton { justify-self: end; min-height: 42px; display: flex; align-items: center; gap: 8px; padding: 8px 10px 8px 15px; border: 1px solid #d9cec2; border-radius: 999px; background: var(--white); font-size: 13px; font-weight: 700; box-shadow: 0 3px 14px rgba(48, 39, 31, .04); }
+.headerActions { justify-self: end; display: flex; align-items: center; gap: 8px; }
+.savedButton { min-height: 42px; display: flex; align-items: center; gap: 8px; padding: 8px 10px 8px 15px; border: 1px solid #d9cec2; border-radius: 999px; background: var(--white); font-size: 13px; font-weight: 700; box-shadow: 0 3px 14px rgba(48, 39, 31, .04); }
 .savedButton:hover { border-color: var(--brand); color: var(--brand); transform: translateY(-1px); }
 .savedButton > span:first-child { color: var(--brand); font-size: 18px; line-height: 1; }
 .savedButton b { min-width: 23px; height: 23px; display: grid; place-items: center; border-radius: 50%; background: var(--brand); color: #fff; font-size: 11px; }
+.accountChip { min-height: 42px; display: flex; align-items: center; gap: 7px; padding: 5px 11px 5px 5px; border: 1px solid #d9cec2; border-radius: 999px; background: #fff; color: var(--ink); text-decoration: none; }
+.accountChip > span { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; background: #dde9df; color: #315740; font-size: 12px; font-weight: 900; }
+.accountChip i { color: #55705e; font-size: 10px; font-style: normal; font-weight: 800; white-space: nowrap; }
+.accountChip:hover { border-color: #6d8b76; transform: translateY(-1px); }.signInChip > span { background: #f9e4df; color: var(--brand-dark); }.signInChip i { color: var(--brand-dark); }
 .mobileNav { display: none; }
 
 .hero { position: relative; min-height: 570px; color: #fff; overflow: hidden; background: #3b5148; }
@@ -65,6 +70,7 @@ button, a, input, select { transition: color var(--ease), background var(--ease)
 .searchBox > span { color: var(--brand); font-size: 25px; transform: rotate(-18deg); }
 .searchBox input { min-width: 0; flex: 1; height: 100%; border: 0; outline: 0; padding: 0 14px; background: transparent; color: var(--ink); font-size: 14px; }
 .searchBox input::placeholder { color: #8c938f; }
+.searchHint { display: block; width: min(620px, 100%); margin-top: 10px; padding-left: 18px; color: rgba(255,255,255,.82); font-size: 12px; line-height: 1.5; }
 .searchBox button { min-height: 46px; border: 0; padding: 0 22px; border-radius: 999px; background: var(--brand); color: #fff; font-size: 13px; font-weight: 800; }
 .searchBox button:hover { background: var(--brand-dark); }
 .heroActions { display: flex; gap: 12px; margin-top: 18px; }
@@ -171,6 +177,9 @@ button, a, input, select { transition: color var(--ease), background var(--ease)
 .detailCopy > span { color: var(--muted); font-size: 13px; line-height: 1.8; }
 .detailCopy .tagRow { margin: 22px 0 30px; }
 .detailActions { display: flex; gap: 10px; }
+.liveWeather { display: grid; grid-template-columns: auto 1fr; gap: 5px 12px; margin: 20px 0 0; padding: 14px 16px; border-radius: var(--radius-sm); background: #edf3ed; }
+.liveWeather strong { color: #365c42; font-size: 11px; }.liveWeather span { color: #52675a; font-size: 11px; }.liveWeather a { grid-column: 2; color: #6a7a70; font-size: 9px; text-decoration: none; }
+.sourceLink { margin: -18px 0 24px; color: #777e79; font-size: 10px; text-decoration: none; }.sourceLink:hover { color: var(--brand); }
 
 .subPage { min-height: 680px; padding: 70px 0 100px; }
 .subPageIntro { max-width: 700px; margin: 0 auto 42px; text-align: center; }
@@ -213,18 +222,31 @@ legend { margin-bottom: 12px; font-size: 12px; font-weight: 800; }
 .resultHeader, .favoritesHeader { display: flex; justify-content: space-between; align-items: flex-end; gap: 30px; margin-bottom: 42px; }
 .resultHeader > div:first-child, .favoritesHeader > div:first-child { max-width: 720px; }
 .resultActions { display: flex; gap: 9px; flex-wrap: wrap; justify-content: flex-end; }
+.resultDestinationPhoto { position: relative; min-height: 280px; height: clamp(280px, 35vw, 430px); margin: -12px 0 34px; overflow: hidden; border-radius: var(--radius-lg); background: #d8d4ca; box-shadow: var(--shadow-md); }
+.resultDestinationPhoto::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg,transparent 48%,rgba(15,24,21,.78)); pointer-events: none; }
+.resultDestinationPhoto img { width: 100%; height: 100%; display: block; object-fit: cover; transition: transform 260ms ease; }
+.resultDestinationPhoto:hover img { transform: scale(1.025); }
+.resultDestinationPhoto figcaption { position: absolute; left: 0; right: 0; bottom: 0; z-index: 1; display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; padding: 28px 30px; color: #fff; font-size: 11px; }
+.resultDestinationPhoto figcaption span { display: grid; gap: 4px; }.resultDestinationPhoto figcaption b { font: 700 23px "Songti SC",serif; }
+.resultDestinationPhoto figcaption a { color: rgba(255,255,255,.9); font-size: 10px; text-decoration: none; }.resultDestinationPhoto figcaption a:hover { color: #fff; text-decoration: underline; }
 .toast { margin: -22px 0 25px; padding: 12px 16px; border-radius: var(--radius-sm); background: #e2f1e7; color: #26653e; font-size: 12px; font-weight: 800; }
+.dataNotice { margin: -12px 0 24px; padding: 12px 16px; border-radius: var(--radius-sm); background: #fff1d7; color: #805824; font-size: 11px; }
+.resultSummary { margin: 14px 0 0; color: var(--muted); font-size: 13px; line-height: 1.7; }
 .dayTimeline { display: grid; gap: 18px; }
 .dayCard { display: grid; grid-template-columns: 230px 1fr; overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--paper); }
 .dayLabel { padding: 30px; background: #2b3430; color: #fff; }
 .dayLabel span { color: #efa796; font-size: 11px; font-weight: 800; letter-spacing: 1.5px; }.dayLabel h2 { margin-top: 12px; font-size: 25px; line-height: 1.25; }
+.weatherBadge { display: grid; gap: 4px; margin-top: 24px; padding-top: 18px; border-top: 1px solid rgba(255,255,255,.14); }.weatherBadge b { font-size: 12px; }.weatherBadge small { color: #cbd6d0; font-size: 9px; line-height: 1.5; }
 .dayItems { padding: 20px 30px; }
 .dayItem { display: grid; grid-template-columns: 62px 1fr; gap: 18px; padding: 16px 0; border-bottom: 1px solid #eee7dd; }
 .dayItem:last-child { border-bottom: 0; }.dayItem time { color: var(--brand); font-size: 11px; font-weight: 900; }
 .dayItem div { display: grid; gap: 5px; }.dayItem strong { font-size: 14px; }.dayItem span, .dayItem small { color: var(--muted); font-size: 11px; }
+.trafficLookup { display: flex !important; align-items: center; gap: 9px !important; margin-top: 5px; }.trafficLookup button { width: max-content; min-height: 30px; border: 1px solid #d8cbbd; border-radius: 999px; padding: 0 11px; background: #fff; color: #725a4d; font-size: 9px; font-weight: 800; }.trafficLookup button:hover { border-color: var(--brand); color: var(--brand); }.trafficLookup em { color: #a15345; font-size: 9px; font-style: normal; }.trafficLookup .trafficSuccess { color: #347047; }
 .resultNote { margin-top: 18px; padding: 20px 24px; border-radius: var(--radius-sm); background: #eee7dc; }.resultNote p { margin: 5px 0 0; color: var(--muted); font-size: 12px; }
+.formError { display: grid; gap: 5px; margin-top: 22px; padding: 13px 15px; border: 1px solid #efc2b9; border-radius: var(--radius-sm); background: #fff1ed; color: #923a2e; }.formError strong { font-size: 11px; }.formError span { font-size: 10px; line-height: 1.5; }
 
 .favoritesHeader { padding: 10px 0 0; }
+.syncBanner { display: flex; align-items: center; gap: 14px; margin: -18px 0 26px; padding: 16px 18px; border: 1px solid #ead5ce; border-radius: var(--radius-sm); background: #fff8f3; }.syncBanner > span { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; background: #f7ddd6; color: var(--brand-dark); font-weight: 900; }.syncBanner > div { flex: 1; display: grid; gap: 4px; }.syncBanner strong { font-size: 12px; }.syncBanner small { color: var(--muted); font-size: 10px; }.syncBanner > a { min-height: 36px; display: inline-flex; align-items: center; padding: 0 14px; border-radius: 999px; background: var(--brand); color: #fff; font-size: 10px; font-weight: 800; text-decoration: none; }.syncBanner.isSynced { border-color: #cfdfd3; background: #f1f7f2; }.syncBanner.isSynced > span { background: #d9ebde; color: #2f6b43; }.syncBanner.isSynced > a { background: #3f654c; }
 .collectionCount { display: grid; padding: 16px 24px; border-left: 1px solid var(--line); text-align: center; }.collectionCount b { color: var(--brand); font: 800 34px "Songti SC", serif; }.collectionCount span { color: var(--muted); font-size: 10px; }
 .favoriteTabs { display: flex; border-bottom: 1px solid var(--line); }
 .favoriteTabs button { min-height: 53px; display: flex; align-items: center; gap: 8px; border: 0; border-bottom: 3px solid transparent; padding: 0 24px; background: transparent; color: var(--muted); font-size: 13px; }
@@ -243,7 +265,7 @@ legend { margin-bottom: 12px; font-size: 12px; font-weight: 800; }
 .footerBrand { margin-bottom: 10px; }.siteFooter p { margin: 0; color: var(--muted); font-size: 11px; }.siteFooter nav { display: flex; gap: 26px; }.siteFooter nav button { border: 0; background: transparent; color: var(--muted); font-size: 11px; }.siteFooter nav button:hover { color: var(--brand); }.siteFooter small { color: #a19f99; font-size: 8px; letter-spacing: 1px; }
 
 @media (max-width: 960px) {
-  .navContainer { grid-template-columns: 190px 1fr 160px; }.desktopNav { gap: 20px; }.brandSub { display: none; }
+  .navContainer { grid-template-columns: 135px 1fr 250px; }.desktopNav { gap: 18px; }.brandSub { display: none; }.accountChip i { display: none; }.accountChip { padding-right: 5px; }
   .hero, .heroInner { min-height: 540px; }.heroCopy { width: 76%; }.heroNote { width: 205px; }
   .destinationGrid, .recentRow, .seasonGrid, .routeGrid { grid-template-columns: repeat(2, minmax(0,1fr)); }
   .seasonGrid .seasonCard:last-child, .routeGrid .routeCard:last-child { grid-column: 1 / -1; }
@@ -257,6 +279,7 @@ legend { margin-bottom: 12px; font-size: 12px; font-weight: 800; }
   body { padding-bottom: 67px; }
   .siteHeader { height: 64px; }.navContainer { width: calc(100% - 32px); grid-template-columns: 1fr auto; }.brandMark { font-size: 27px; }.desktopNav { display: none; }
   .savedButton { min-height: 38px; padding: 6px 8px 6px 12px; }.savedButton > span:nth-child(2) { display: none; }
+  .accountChip { min-height: 38px; }.accountChip > span { width: 28px; height: 28px; }.headerActions { gap: 6px; }
   .mobileNav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 70; min-height: 67px; display: grid; grid-template-columns: repeat(3,1fr); padding-bottom: env(safe-area-inset-bottom); border-top: 1px solid var(--line); background: rgba(255,253,248,.96); backdrop-filter: blur(14px); }
   .mobileNav button { min-width: 0; display: grid; place-content: center; gap: 3px; border: 0; background: transparent; color: #737b77; font-size: 10px; }.mobileNav button > span { font-size: 19px; line-height: 1; }.mobileNav button.isActive { color: var(--brand); font-weight: 800; }
   .hero { min-height: 570px; }.heroInner { width: calc(100% - 32px); min-height: 570px; padding: 42px 0 28px; align-items: flex-start; }.heroImage { object-position: 58% center; }.heroShade { background: linear-gradient(90deg,rgba(18,29,26,.86),rgba(18,29,26,.48)),linear-gradient(0deg,rgba(18,29,26,.35),transparent); }
@@ -271,12 +294,15 @@ legend { margin-bottom: 12px; font-size: 12px; font-weight: 800; }
   .recentSection { margin-left: -16px; margin-right: -16px; padding: 62px 16px 70px; }
   .plannerCta { min-height: 390px; margin: 65px 0; padding: 36px 24px; align-items: flex-start; flex-direction: column; justify-content: center; }.plannerCta h2 { font-size: 35px; }.plannerCta .button { width: 100%; }
   .dialogBackdrop { padding: 12px; }.detailDialog { display: block; max-height: calc(100vh - 24px); }.detailDialog > img { min-height: 0; height: 240px; }.detailCopy { padding: 28px 22px; }.detailCopy h2 { font-size: 29px; }.detailActions { display: grid; }
+  .liveWeather { grid-template-columns: 1fr; }.liveWeather a { grid-column: 1; }
   .subPage { min-height: 720px; padding: 48px 0 72px; }.subPageIntro { margin-bottom: 30px; }.subPageIntro h1, .favoritesHeader h1, .resultHeader h1 { font-size: 40px; }
   .plannerLayout { grid-template-columns: 1fr; }.progressPanel { padding: 20px; }.progressPanel ol { grid-template-columns: repeat(4,1fr); gap: 6px; margin-top: 20px; }.progressPanel li { display: grid; justify-items: center; gap: 6px; text-align: center; font-size: 9px; }.progressPanel li span { width: 25px; height: 25px; }
   .formPanel { min-height: 500px; padding: 28px 20px; }.formGrid { grid-template-columns: 1fr; }.segmented { grid-template-columns: repeat(2,1fr); }.interestGrid { grid-template-columns: repeat(2,1fr); }.optionCards { grid-template-columns: 1fr; }
   .formActions .button { padding: 0 18px; }.resultHeader, .favoritesHeader { align-items: flex-start; flex-direction: column; }.resultActions { width: 100%; display: grid; grid-template-columns: 1fr 1fr; }.resultActions .primaryButton { grid-column: 1/-1; }
+  .resultDestinationPhoto { min-height: 220px; height: 54vw; margin-top: -16px; border-radius: var(--radius-md); }.resultDestinationPhoto figcaption { align-items: flex-start; flex-direction: column; gap: 8px; padding: 20px; }.resultDestinationPhoto figcaption b { font-size: 20px; }
   .dayCard { grid-template-columns: 1fr; }.dayLabel { padding: 22px; }.dayLabel h2 { margin-bottom: 0; }.dayItems { padding: 10px 20px; }.dayItem { grid-template-columns: 52px 1fr; gap: 10px; }
   .collectionCount { display: none; }.favoriteTabs { overflow-x: auto; }.favoriteTabs button { flex: 0 0 auto; padding: 0 15px; }
+  .syncBanner { align-items: flex-start; flex-wrap: wrap; margin-top: -10px; }.syncBanner > a { width: 100%; justify-content: center; }
   .collectionToolbar { align-items: stretch; flex-direction: column; }.collectionSearch { width: 100%; }.sortSelect { justify-content: flex-end; }
   .routeList article, .savedTrip { align-items: flex-start; flex-wrap: wrap; padding: 20px; }.routeList article .button { width: 100%; }.savedTrip > div:last-child { width: 100%; display: grid; grid-template-columns: 1fr 1fr; }
   .siteFooter { min-height: 230px; grid-template-columns: 1fr; gap: 20px; padding: 38px 0; }.siteFooter nav { gap: 18px; flex-wrap: wrap; }

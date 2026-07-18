@@ -1,98 +1,50 @@
-# vinext-starter
+# 去野旅行灵感
 
-A clean full-stack starter running on
-[vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
-Drizzle support.
+中文旅行灵感与智能行程网站，基于 Next.js、React、vinext 和 Cloudflare Sites 构建。
 
-## Prerequisites
+## 已接入能力
 
-- Node.js `>=22.13.0`
+- DeepSeek Chat Completions API：为全球城市、国家、海岛、偏远地区与跨城路线生成按天组织的结构化行程
+- Open-Meteo：目的地地理匹配与未来 16 天逐日天气
+- 高德 Web 服务：驾车、公交、步行与骑行路线查询
+- 中文维基百科：正式目的地简介、图片与来源链接
+- ChatGPT 登录 + Cloudflare D1：跨设备同步目的地收藏和 AI 行程
 
-## Quick Start
+## 本地启动
+
+需要 Node.js `>=22.13.0`。
 
 ```bash
 npm install
 npm run dev
-npm run build
 ```
 
-This starter does not use `wrangler.jsonc`.
+复制 `.env.example` 为 `.env`，按需填写：
 
-## Included Shape
-
-- edit site code under `app/`
-- `.openai/hosting.json` declares optional Sites D1 and R2 bindings
-- `vite.config.ts` simulates declared bindings for local development
-- `db/schema.ts` starts intentionally empty
-- `examples/d1/` contains an optional D1 example surface
-- `drizzle.config.ts` supports local migration generation when needed
-
-## Workspace Auth Headers
-
-OpenAI workspace sites can read the current user's email from
-`oai-authenticated-user-email`.
-
-SIWC-authenticated workspace sites may also receive
-`oai-authenticated-user-full-name` when the user's SIWC profile has a non-empty
-`name` claim. The full-name value is percent-encoded UTF-8 and is accompanied by
-`oai-authenticated-user-full-name-encoding: percent-encoded-utf-8`.
-
-Treat the full name as optional and fall back to email when it is absent:
-
-```tsx
-import { headers } from "next/headers";
-
-export default async function Home() {
-  const requestHeaders = await headers();
-  const email = requestHeaders.get("oai-authenticated-user-email");
-  const encodedFullName = requestHeaders.get("oai-authenticated-user-full-name");
-  const fullName =
-    encodedFullName &&
-    requestHeaders.get("oai-authenticated-user-full-name-encoding") ===
-      "percent-encoded-utf-8"
-      ? decodeURIComponent(encodedFullName)
-      : null;
-
-  const displayName = fullName ?? email;
-  // ...
-}
+```dotenv
+DEEPSEEK_API_KEY=你的_DeepSeek_API_Key
+DEEPSEEK_MODEL=deepseek-v4-flash
+AMAP_WEB_SERVICE_KEY=你的高德_Web服务_Key
 ```
 
-## Optional Dispatch-Owned ChatGPT Sign-In
+密钥只在服务端读取，不能添加 `NEXT_PUBLIC_` 前缀，也不要提交真实密钥。
 
-Import the ready-to-use helpers from `app/chatgpt-auth.ts` when the site needs
-optional or required ChatGPT sign-in:
+## 验证
 
-- Use `getChatGPTUser()` for optional signed-in UI.
-- Use `requireChatGPTUser(returnTo)` for server-rendered pages that should send
-  anonymous visitors through Sign in with ChatGPT.
-- Use `chatGPTSignInPath(returnTo)` and `chatGPTSignOutPath(returnTo)` for
-  browser links or actions.
-- Pass a same-origin relative `returnTo` path for the destination after sign-in
-  or sign-out. The helper validates and safely encodes it.
-- Mark protected pages with `export const dynamic = "force-dynamic"` because
-  they depend on per-request identity headers.
+```bash
+npm run lint
+npm test
+```
 
-Dispatch owns `/signin-with-chatgpt`, `/signout-with-chatgpt`, `/callback`, the
-OAuth cookies, and identity header injection. Do not implement app routes for
-those reserved paths. Routes that do not import and call the helper remain
-anonymous-compatible.
+数据库结构变更后运行：
 
-SIWC establishes identity only; it does not prove workspace membership. Use the
-Sites hosting platform's access policy controls for workspace-wide restrictions,
-or enforce explicit server-side membership or allowlist checks.
+```bash
+npm run db:generate
+```
 
-Use SIWC for account pages, user-specific dashboards, saved records, and write
-actions tied to the current ChatGPT user. Leave public content anonymous.
+## 数据说明
 
-## Useful Commands
-
-- `npm run dev`: start local development
-- `npm run build`: verify the vinext build output
-- `npm test`: build the starter and verify its rendered loading skeleton
-- `npm run db:generate`: generate Drizzle migrations after schema changes
-
-## Learn More
-
-- [vinext Documentation](https://github.com/cloudflare/vinext)
-- [Drizzle D1 Guide](https://orm.drizzle.team/docs/get-started/d1-new)
+- Open-Meteo 仅提供未来 16 天内的逐日天气；更远日期会显示最近预报并提示临行前复查。
+- DeepSeek 行程不会声称已实时核验营业时间、票价或预约状态。
+- 高德路线结果依赖地点可被高德地理编码识别；国际或偏远目的地仍可生成完整 AI 行程和全球天气，但实时交通会提示改用当地地图。
+- 未登录时收藏保存在本机；登录后会与账户收藏合并并同步到 D1。
